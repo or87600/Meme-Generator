@@ -4,7 +4,8 @@ let gPageState = 'gallery'
 let gElCanvas
 let gCtx
 let gCurrentMeme = null
-let textSizeInterval
+let gFocusedLineIdx = null
+let gTextSizeInterval
 
 function onInit() {
     if (gPageState === 'gallery') renderGallery()
@@ -41,7 +42,8 @@ function renderEditor() {
     gCurrentMeme.onload = () => {
         coverCanvasWithImg(gCurrentMeme)
         renderText()
-        updateEditorFields()
+        if (!meme.lines) updateEditorFields(true)
+        else updateEditorFields()
     }
 }
 
@@ -88,22 +90,17 @@ function renderText() {
             yPosition = gElCanvas.height / 2
         }
 
-        const textWidth = gCtx.measureText(line.txt).width
-        const textHeight = line.size
-
         gCtx.strokeText(line.txt, gElCanvas.width / 2, yPosition)
         gCtx.fillText(line.txt, gElCanvas.width / 2, yPosition)
 
         if (idx === selectedLineIdx) {
             gCtx.strokeStyle = line.stroke
-            gCtx.beginPath()
-            gCtx.rect(
-                gElCanvas.width / 2 - textWidth / 2 - padding - margin,
-                yPosition - textHeight - padding,
-                textWidth + padding * 2 + margin * 2,
-                textHeight + padding * 2 + margin * 2
-            )
-            gCtx.stroke()
+            gCtx.strokeRect(
+                gElCanvas.width / 2 - gCtx.measureText(line.txt).width / 2 - 10,
+                yPosition - line.size - 5,
+                gCtx.measureText(line.txt).width + 20,
+                line.size + 20
+            );
         }
     })
 }
@@ -159,14 +156,14 @@ function onChangeTextSizeOnce(diff) {
 }
 
 function startChangeTextSize(diff) {
-    textSizeInterval = setInterval(() => {
+    gTextSizeInterval = setInterval(() => {
         changeTextSize(diff)
         renderText()
     }, 100)
 }
 
 function stopChangeTextSize() {
-    clearInterval(textSizeInterval)
+    clearInterval(gTextSizeInterval)
 }
 
 function openColorPicker(btnName) {
@@ -223,20 +220,25 @@ function onChangeLayout(section) {
     }
 }
 
-function updateEditorFields() {
+function updateEditorFields(isReset = false) {
     const meme = getMeme();
-    const { selectedLineIdx, lines } = meme
+    const { selectedLineIdx, lines } = meme;
 
-    if (!lines || lines.length === 0) return
+    const elInput = document.querySelector('.text-input');
+    const elStrokeBtn = document.querySelector('.stroke-clr-btn');
+    const elFillBtn = document.querySelector('.fill-clr-btn');
+    const elFontSelect = document.querySelector('.fonts');
 
-    const selectedLine = lines[selectedLineIdx]
-    const elInput = document.querySelector('.text-input')
-    const elStrokeBtn = document.querySelector('.stroke-clr-btn')
-    const elFillBtn = document.querySelector('.fill-clr-btn')
-    const elFontSelect = document.querySelector('.fonts')
-
-    elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt
-    elStrokeBtn.style.backgroundColor = selectedLine.stroke
-    elFillBtn.style.backgroundColor = selectedLine.fill
-    elFontSelect.value = selectedLine.font
+    if (isReset || !lines || lines.length === 0) {
+        elInput.value = '';
+        elStrokeBtn.style.backgroundColor = '#F0F0F0';
+        elFillBtn.style.backgroundColor = '#F0F0F0';
+        elFontSelect.value = 'Arial';
+    } else {
+        const selectedLine = lines[selectedLineIdx];
+        elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt;
+        elStrokeBtn.style.backgroundColor = selectedLine.stroke;
+        elFillBtn.style.backgroundColor = selectedLine.fill;
+        elFontSelect.value = selectedLine.font;
+    }
 }
