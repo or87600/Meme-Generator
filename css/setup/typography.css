@@ -1,0 +1,70 @@
+@font-face {
+    font-family: AmaticSC-Bold;
+    src: url('../fonts/AmaticSC/AmaticSC-Bold.ttf');
+}
+
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Regular.ttf');
+}
+
+/* Font Awesome */
+
+@font-face {
+    font-family: Fa;
+    src: url('../fonts/Fa/fa-solid-900.woff2');
+}
+
+.fa {
+    font-family: Fa;
+}
+
+.fa::before {
+    content: '';
+}
+
+/* ------- */
+
+.fa.switch-line::before {
+    content: '\f062  \f063';
+}
+
+.fa.add-line::before {
+    content: '\2b';
+}
+
+.fa.remove-line::before {
+    content: '\f2ed';
+}
+
+/* ------- */
+
+.fa.increase-font::before {
+    content: '\f031\2b';
+}
+
+.fa.decrease-font::before {
+    content: '\f031\f068';
+}
+
+.fa.stroke-clr-btn::before {
+    content: '\f53f';
+}
+
+.fa.fill-clr-btn::before {
+    content: '\f575';
+}
+
+/* ------- */
+
+.fa.btn-save::before {
+    content: '\f02e';
+}
+
+.fa.btn-share::before {
+    content: '\f1e0';
+}
+
+.fa.btn-download::before {
+    content: '\f019';
+}

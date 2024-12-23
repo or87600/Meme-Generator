@@ -1,0 +1,17 @@
+/* main layout */
+
+.main-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(40px, 1fr)
+        minmax(auto, 980px) 
+        minmax(40px, 1fr);
+}
+
+.main-layout>*:not(.full) {
+    grid-column: 2;
+}
+
+.main-layout>*.full {
+    grid-column: 1 / -1;
+}

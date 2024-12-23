@@ -1,0 +1,31 @@
+.main-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+
+    font-family: AmaticSC-Bold, sans-serif;
+    background-color: var(--header-footer-clr);
+
+    .main-logo {
+        font-size: 3.5rem;
+    }
+
+    .main-nav {
+        flex-grow: 1;
+
+        font-size: 2rem;
+
+        ul {
+            justify-content: flex-end;
+            column-gap: 30px;
+
+            li {
+
+                a {
+                    height: var(--header-height);
+                    aspect-ratio: 1;
+                }
+            }
+
+        }
+    }
+}

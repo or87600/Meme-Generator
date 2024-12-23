@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme-Generator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body onload="onInit()">
+
+    <div class="app">
+
+        <header class="main-header main-layout full flex align-center space-between">
+            <div class="flex align-center justify-center">
+                <div class="main-logo">Meme Generator</div>
+                <nav class="main-nav">
+                    <ul class="nav-list flex clean-list flex">
+                        <li class="nav-item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('gallery')">Gallery</a></li>
+                        <li class="nav-item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('saved')">Saved</a></li>
+                        <li class="nav-item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('editor')">Editor</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content main-layout">
+            <section class="memes-gallery flex"></section>
+
+            <section class="saved-memes hidden"></section>
+
+            <section class="editor-container flex hidden">
+
+                <section class="meme-container">
+                    <canvas class="meme"></canvas>
+                </section>
+
+                <section class="editor-controller flex column">
+
+                    <input class="input text-input" type="text" placeholder="Add text here.." oninput="onUpdateText(this)">
+                    <section class="input-actions-container flex align-center justify-center">
+                        <button class="btn fa switch-line" onclick="onSwitchLine()"></button>
+                        <button class="btn fa add-line" onclick="onAddLine()"></button>
+                        <button class="btn fa remove-line" onclick="onRemoveLine()"></button>
+                    </section>
+
+                    <section class="font-typograpgy-container" onchange="onChangeFont()">
+
+                        <button class="btn fa increase-font" title="Increase size (click or hold)"
+                            onclick="onChangeTextSizeOnce(1)" onmousedown="startChangeTextSize(1)"
+                            onmouseup="stopChangeTextSize()" onmouseleave="stopChangeTextSize()">
+                        </button>
+
+                        <button class="btn fa decrease-font" title="Decrease size (click or hold)"
+                            onclick="onChangeTextSizeOnce(-1)" onmousedown="startChangeTextSize(-1)"
+                            onmouseup="stopChangeTextSize()" onmouseleave="stopChangeTextSize()">
+                        </button>
+
+                        <button class="btn fa stroke-clr-btn" onclick="openColorPicker('stroke-btn')"></button>
+                        <input type="color" class="stroke-clr-picker-input" oninput="onSelectStrokeColor(this)">
+
+                        <button class="btn fa fill-clr-btn" onclick="openColorPicker('fill-btn')"></button>
+                        <input type="color" class="fill-clr-picker-input" oninput="onSelectFillColor(this)">
+
+
+                        <select name="fonts" class="fonts select">
+                            <option value="Arial">Arial</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                        </select>
+                    </section>
+
+                    <section class="meme-actions flex justify-center align-center">
+                        <button class="btn fa btn-save">Save</button>
+                        <button class="btn fa btn-share">Share</button>
+                        <a class="btn fa btn-download" download="my-img.jpg" onclick="onDownloadMeme(this)">Download</a>
+                    </section>
+
+                </section>
+
+            </section>
+        </main>
+
+        <footer class="main-footer flex justify-center align-center">© 2024 Meme-Generator. All rights reserved.
+        </footer>
+
+    </div>
+
+    <script src="js/services/utils.service.js"></script>
+    <script src="js/services/meme.service.js"></script>
+    <script src="js/services/storage.service.js"></script>
+    <script src="js/meme.controller.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+:root {
+
+    /* PALLETE */
+    --header-footer-clr: #6c6c6c;
+
+    /* HEADER VARS */
+    --header-height: 100px;
+
+    /* MEME CONTROLLER VARS */
+    --gap: 20px;
+}

@@ -1,0 +1,114 @@
+
+.editor-container {
+    gap: 30px;
+    padding: 30px;
+    background-color: var(--header-footer-clr);
+    
+    .meme-container {
+        flex-grow: 1;
+
+        canvas {
+            width: 100%;
+            aspect-ratio: 1;
+        }
+    }
+
+    .editor-controller {
+        row-gap: var(--gap);
+        
+
+        .input-actions-container {
+            gap: var(--gap);
+
+            .switch-line {
+                
+                &::before {
+                    transform: rotate(45deg);
+                }
+            }
+        }
+    
+    
+        .font-typograpgy-container {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: var(--gap);
+
+            .stroke-clr-picker-input,
+            .fill-clr-picker-input {
+                position: absolute;
+                top: 20px;
+
+                visibility: hidden;
+            }
+
+            .stroke-clr-picker-input {
+                left: 120px;
+            }
+
+            .fill-clr-picker-input {
+                left: 240px;
+            }
+
+            .select {
+                grid-area: 2 / span 4;
+            }
+        }
+
+        .meme-actions {
+            gap: var(--gap);
+            margin-block-start: auto;
+
+            .btn {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                color: #fff;
+                letter-spacing: 3px;
+
+                &.btn-save {
+                    background: radial-gradient(100% 100% at 100% 0%, #89E5FF 0%, #5468FF 100%);
+                    box-shadow: 0px 0.01em 0.01em rgb(45 35 66 / 40%), 0px 0.3em 0.7em -0.01em rgb(45 35 66 / 30%), inset 0px -0.01em 0px rgb(58 65 111 / 50%);
+                
+                    &:hover {
+                        box-shadow: 0px 0.1em 0.2em rgb(45 35 66 / 40%), 0px 0.4em 0.7em -0.1em rgb(45 35 66 / 30%), inset 0px -0.1em 0px #3c4fe0;
+                    }
+                
+                    &:active {
+                        box-shadow: inset 0px 0.1em 0.6em #3c4fe0;
+                    }
+                }
+                
+                &.btn-share {
+                    background: radial-gradient(100% 100% at 100% 0%, #FFB347 0%, #FF7733 100%);
+                    box-shadow: 0px 0.01em 0.01em rgb(45 35 66 / 40%), 0px 0.3em 0.7em -0.01em rgb(45 35 66 / 30%), inset 0px -0.01em 0px rgb(58 65 111 / 50%);
+                
+                    &:hover {
+                        box-shadow: 0px 0.1em 0.2em rgb(45 35 66 / 40%), 0px 0.4em 0.7em -0.1em rgb(45 35 66 / 30%), inset 0px -0.1em 0px #ff571a;
+                    }
+                
+                    &:active {
+                        box-shadow: inset 0px 0.1em 0.6em #ff571a;
+                    }
+                }
+                
+                &.btn-download {
+                    background: radial-gradient(100% 100% at 100% 0%, #34D399 0%, #059669 100%);
+                    box-shadow: 0px 0.01em 0.01em rgb(45 35 66 / 40%), 0px 0.3em 0.7em -0.01em rgb(45 35 66 / 30%), inset 0px -0.01em 0px rgb(58 65 111 / 50%);
+                
+                    &:hover {
+                        box-shadow: 0px 0.1em 0.2em rgb(45 35 66 / 40%), 0px 0.4em 0.7em -0.1em rgb(45 35 66 / 30%), inset 0px -0.1em 0px #047857;
+                    }
+                
+                    &:active {
+                        box-shadow: inset 0px 0.1em 0.6em #047857;
+                    }
+                }
+            }
+        }
+    }
+}
