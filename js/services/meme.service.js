@@ -20,7 +20,14 @@ const gImgs = [
     { id: 15, url: 'img/15.jpg', keywords: ['serious', 'classic'] },
     { id: 16, url: 'img/16.jpg', keywords: ['laughing', 'reaction'] },
     { id: 17, url: 'img/17.jpg', keywords: ['politics', 'serious'] },
-    { id: 18, url: 'img/18.jpg', keywords: ['celebration'] }
+    { id: 18, url: 'img/18.jpg', keywords: ['reaction'] },
+    { id: 19, url: 'img/19.jpg', keywords: ['reaction'] },
+    { id: 20, url: 'img/20.jpg', keywords: ['funny'] },
+    { id: 21, url: 'img/21.jpg', keywords: ['reaction'] },
+    { id: 22, url: 'img/22.jpg', keywords: ['funny', 'celebration'] },
+    { id: 23, url: 'img/23.jpg', keywords: ['funny', 'laughing'] },
+    { id: 24, url: 'img/24.jpg', keywords: ['cute'] },
+    { id: 25, url: 'img/25.jpg', keywords: ['reaction', 'celebration'] },
 ]
 
 var gMeme = {
@@ -29,7 +36,7 @@ var gMeme = {
     lines: [
         {
             txt: 'Add text here..',
-            size: 26,
+            size: 30,
             font: 'Arial',
             fill: '#FFFFFF',
             stroke: '#FF8800',
@@ -68,7 +75,7 @@ function addLine() {
 
     const newLine = {
         txt: 'Add text here..',
-        size: 26,
+        size: 30,
         font: 'Arial',
         fill: '#FFFFFF',
         stroke: '#FF8800',
@@ -123,7 +130,7 @@ function changeTextSize(diff) {
     if (!lines || lines.length === 0) return
 
     const newSize = lines[selectedLineIdx].size + diff
-    if (newSize >= 10 && newSize <= 40) lines[selectedLineIdx].size = newSize
+    if (newSize >= 10 && newSize <= 50) lines[selectedLineIdx].size = newSize
 
     _saveMeme()
 }
