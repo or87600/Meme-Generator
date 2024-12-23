@@ -160,22 +160,6 @@ function changeFont(selectedFont) {
 
 /* -------- LOCAL FUNCTIONS -------- */
 
-function _createDeafultSettings() {
-    return {
-        selectedImgId: null,
-        selectedLineIdx: 0,
-        lines: [
-            {
-                txt: '',
-                size: 26,
-                font: 'Arial',
-                fill: '#FFFFFF',
-                stroke: '#FF8800',
-            }
-        ]
-    }
-}
-
 function _saveMeme() {
     saveToStorage(STORAGE_KEY, gMeme)
 }
