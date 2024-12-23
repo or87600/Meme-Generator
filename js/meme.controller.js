@@ -4,7 +4,6 @@ let gPageState = 'gallery'
 let gElCanvas
 let gCtx
 let gCurrentMeme = null
-let gFocusedLineIdx = null
 let gTextSizeInterval
 
 function onInit() {
