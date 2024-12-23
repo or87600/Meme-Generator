@@ -1,9 +1,9 @@
 .memes-gallery {
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: 10px;
 
     img {
-        flex-grow: 1;
         min-width: 200px;
         cursor: pointer;
     }
