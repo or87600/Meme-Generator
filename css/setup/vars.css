@@ -6,6 +6,10 @@
     /* HEADER VARS */
     --header-height: 100px;
 
+    /* MAIN CONTENT */
+    --main-content-width: 1000px;
+    --gallery-gap: 10px;
+
     /* MEME CONTROLLER VARS */
     --gap: 20px;
 }

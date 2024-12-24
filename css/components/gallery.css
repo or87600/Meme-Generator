@@ -1,10 +1,10 @@
 .memes-gallery {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 10px;
+    column-gap: 10px;
+    columns: calc(var(--main-content-width) / 4 - var(--gallery-gap));
+    
 
     img {
-        min-width: 200px;
+        margin-block-end: var(--gallery-gap);
         cursor: pointer;
     }
 }

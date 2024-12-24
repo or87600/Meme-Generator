@@ -39,11 +39,10 @@ a {
 }
 
 img {
-    width: 10%;
+    width: 100%;
 }
 
 button {
     font-size: 1em;
     border: none;
-    cursor: pointer;
 }

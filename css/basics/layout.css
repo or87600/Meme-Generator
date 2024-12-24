@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns:
         minmax(40px, 1fr)
-        minmax(auto, 980px) 
+        minmax(auto, var(--main-content-width)) 
         minmax(40px, 1fr);
 }
 
