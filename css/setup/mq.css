@@ -4,6 +4,10 @@
         font-size: 12px;
     }
 
+    .main-header {
+        padding-inline: 0.6em;
+    }
+
     .main-nav {
         position: fixed;
         inset: 81px 0 auto 0;
@@ -80,6 +84,10 @@
     
     .editor-container {
         flex-direction: column;
+    }
+
+    .main-layout {
+        display:block;
     }
 }
 
