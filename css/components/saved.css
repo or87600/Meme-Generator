@@ -1,0 +1,10 @@
+.saved-memes {
+    column-gap: 10px;
+    columns: calc(var(--main-content-width) / 4 - var(--gallery-gap));
+    
+
+    img {
+        margin-block-end: var(--gallery-gap);
+        cursor: pointer;
+    }
+}

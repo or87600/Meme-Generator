@@ -1,1 +1,103 @@
-/* Mobile */
+@media (max-width: 649px) {
+
+    html {
+        font-size: 12px;
+    }
+
+    .main-nav {
+        position: fixed;
+        inset: 81px 0 auto 0;
+
+        display: grid;
+        grid-template-rows: 0fr;
+        overflow: hidden;
+        align-items: end;
+
+        transition: grid-template-rows .6s;
+        background-color: #cccccce5;
+
+        .nav-list {
+            flex-direction: column;
+
+            min-height: 0;
+
+            border-inline-start: var(--nav-border);
+            
+            li {
+                display: block;
+                width: 100%;
+                min-width: 135px;
+                border: none;
+                border-block-end: var(--nav-border);
+                transition: box-shadow 0.2s linear;
+                
+                .item {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    height: 100px;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    body.openedMenu {
+        .main-nav {
+            grid-template-rows: 1fr;
+        }
+
+        .overlay {
+            opacity: 1;
+            pointer-events: all;
+            cursor: pointer;
+        }
+    }
+
+    .main-menu {
+        padding: 0.6em;
+        margin-block: 20px;
+
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--clr-primary-5);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+    
+    .editor-container {
+        flex-direction: column;
+    }
+}
+
+
+
+@media (min-width: 650px) {
+
+    html {
+        font-size: 12px;
+    }
+    
+}
+
+
+@media (min-width: 760px) {
+
+    html {
+        font-size: 14px;
+    }
+    
+}

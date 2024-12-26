@@ -1,6 +1,7 @@
 'use strict'
 
 const STORAGE_KEY = 'meme_data'
+const SAVED_MEMES_KEY = 'saved_memes'
 
 const gImgs = [
     { id: 1, url: 'img/1.jpg', keywords: ['politics'] },
@@ -49,6 +50,8 @@ var gMeme = {
     ]
 }
 
+var gSavedMemes = []
+
 function getMemesImgs() {
     return gImgs
 }
@@ -56,6 +59,20 @@ function getMemesImgs() {
 function getMeme() {
     _saveMeme()
     return gMeme
+}
+
+function getSavedMemes() {
+    return loadFromStorage(SAVED_MEMES_KEY) || []
+}
+
+function resetMeme() {
+    gMeme = {
+        selectedImgId: null,
+        selectedLineIdx: 0,
+        lines: [
+            _createDefaultLine()
+        ]
+    }
 }
 
 /* -------- LINES MOVMENTS -------- */
@@ -66,7 +83,7 @@ function isLineClicked(pos, xPos, yPos, textWidth, textHeight) {
         pos.x <= xPos + textWidth / 2 &&
         pos.y >= yPos - textHeight &&
         pos.y <= yPos
-    );
+    )
 }
 
 function setLineDrag(isDrag) {
@@ -105,20 +122,10 @@ function switchLine() {
     saveToStorage(STORAGE_KEY, meme)
 }
 
-function addLine() {
+function addLine(xPos = 150, yPos = 150) {
     const meme = getMeme()
 
-    const newLine = {
-        txt: 'Add text here..',
-        width: 0,
-        size: 30,
-        font: 'Arial',
-        fill: '#FFFFFF',
-        stroke: '#FF8800',
-        xPos: gElCanvas.width / 2,
-        yPos: gElCanvas.height / 2,
-        isDrag: false,
-    }
+    const newLine = _createDefaultLine(xPos, yPos)
 
     meme.lines.push(newLine)
 
@@ -169,7 +176,7 @@ function changeTextSize(diff) {
     if (!lines || lines.length === 0) return
 
     const newSize = lines[selectedLineIdx].size + diff
-    if (newSize >= 10 && newSize <= 50) lines[selectedLineIdx].size = newSize
+    lines[selectedLineIdx].size = newSize
 
     _saveMeme()
 }
@@ -206,6 +213,27 @@ function changeFont(selectedFont) {
 
 /* -------- MEME SAVE/SHARE ACTIONSv -------- */
 
+function saveMeme(imgUrl) {
+    const meme = getMeme()
+    meme.selectedImgId = gMeme.selectedImgId
+    meme.url = imgUrl // Save the image URL
+
+    // Load saved memes from storage
+    gSavedMemes = loadFromStorage(SAVED_MEMES_KEY) || []
+
+    // Add the new meme to the saved memes array
+    gSavedMemes.push(meme)
+
+    saveToStorage(SAVED_MEMES_KEY, gSavedMemes)
+}
+function getSavedMemeById(memeId) {
+    return gSavedMemes.find(meme => meme.selectedImgId === memeId)
+}
+
+function setMeme(meme) {
+    gMeme = meme
+}
+
 async function uploadImg(imgData, onSuccess) {
     const CLOUD_NAME = 'webify'
     const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
@@ -227,6 +255,19 @@ async function uploadImg(imgData, onSuccess) {
 }
 
 /* -------- LOCAL FUNCTIONS -------- */
+
+function _createDefaultLine() {
+    return {
+        txt: 'Add text here..',
+        size: 30,
+        font: 'Arial',
+        fill: '#FFFFFF',
+        stroke: '#FF8800',
+        xPos: 150,
+        yPos: 50,
+        isDrag: false,
+    }
+}
 
 function _saveMeme() {
     saveToStorage(STORAGE_KEY, gMeme)

@@ -7,12 +7,13 @@ let gCurrentMeme = null
 let gTextSizeInterval
 let gStartPos
 const TOUCH_EVS = ['touchstart', 'touchmove', 'touchend']
+let gRemoveBorderText = false
 
 function onInit() {
-    if (gPageState === 'gallery') renderGallery()
-    else if (gPageState === 'saved') renderSaved()
-    else if (gPageState === 'editor') renderMeme()
+    renderGallery()
 }
+
+/* -------- GALLERY -------- */
 
 function renderGallery() {
 
@@ -25,9 +26,41 @@ function renderGallery() {
         onclick="onClickMeme(${meme.id})">
     `)
 
-    elGallery.hidden = false
     elGallery.innerHTML = strHtml.join('')
 }
+
+function onClickMeme(memeId) {
+    resetMeme()
+    const meme = getMeme()
+    meme.selectedImgId = memeId
+    onChangeLayout('editor')
+    updateEditorFields(true)
+    renderMeme()
+}
+
+/* -------- SAVED MEMES -------- */
+
+function renderSavedMemes() {
+    const savedMemes = getSavedMemes()
+    const elSavedMemes = document.querySelector('.saved-memes')
+
+    const strHtml = savedMemes.map(meme => `
+        <img src="${meme.url}"
+        alt="meme number ${meme.selectedImgId}"
+        onclick="onOpenSavedMeme(${meme.selectedImgId})">
+    `)
+
+    elSavedMemes.innerHTML = strHtml.join('')
+}
+
+function onOpenSavedMeme(memeId) {
+    const meme = getSavedMemeById(memeId)
+    setMeme(meme)
+    onChangeLayout('editor')
+    renderMeme()
+}
+
+/* -------- EDITOR -------- */
 
 function renderMeme() {
     const meme = getMeme()
@@ -36,32 +69,32 @@ function renderMeme() {
     gElCanvas = document.querySelector('canvas.meme')
     gCtx = gElCanvas.getContext('2d')
 
-    const selectedImg = memesImgs.find(img => img.id === meme.selectedImgId)
+    const selectedImg = memesImgs.find(img => img.id === meme.selectedImgId) || { url: meme.imgUrl }
     gCurrentMeme = new Image()
     gCurrentMeme.src = selectedImg.url
 
     gCurrentMeme.onload = () => {
         coverCanvasWithImg(gCurrentMeme)
-        renderText()
+        renderLine()
+        addLinsteners()
         if (!meme.lines) updateEditorFields(true)
         else updateEditorFields()
-        addLinsteners()
     }
 }
 
 function coverCanvasWithImg(img) {
-    const imgRatio = img.naturalWidth / img.naturalHeight;
+    const imgRatio = img.naturalWidth / img.naturalHeight
 
     if (gElCanvas.width / gElCanvas.height > imgRatio) {
-        gElCanvas.height = gElCanvas.width / imgRatio;
+        gElCanvas.height = gElCanvas.width / imgRatio
     } else {
-        gElCanvas.width = gElCanvas.height * imgRatio;
+        gElCanvas.width = gElCanvas.height * imgRatio
     }
 
-    gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height);
+    gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height)
 }
 
-function renderText() {
+function renderLine() {
     const meme = getMeme()
     const { selectedLineIdx, lines } = meme
 
@@ -72,45 +105,42 @@ function renderText() {
     if (gCurrentMeme) coverCanvasWithImg(gCurrentMeme)
 
     lines.forEach((line, idx) => {
-        const { xPos, yPos, txt, size, font, fill, stroke } = line
-
-        gCtx.font = `${size}px ${font}`
-        gCtx.lineWidth = 2
-        gCtx.lineJoin = 'round'
-        gCtx.lineCap = 'round'
-
-        gCtx.strokeStyle = stroke
-        gCtx.fillStyle = fill
-        gCtx.textAlign = 'center'
-
-        gCtx.strokeText(txt, xPos, yPos)
-        gCtx.fillText(txt, xPos, yPos)
-
-        if (idx === selectedLineIdx) {
-            const textWidth = gCtx.measureText(txt).width
-
-            gCtx.strokeStyle = stroke
-            gCtx.strokeRect(
-                xPos - textWidth / 2 - 10,
-                yPos - size - 10,
-                textWidth + 20,
-                size + 20
-            )
-        }
+        drawText(line, idx, selectedLineIdx)
     })
 }
 
-function onClickMeme(memeId) {
-    const meme = getMeme()
-    meme.selectedImgId = memeId
-    gPageState = 'editor'
-    onChangeLayout('editor')
-    onInit()
+function drawText(line, idx = null, selectedLineIdx) {
+    const { xPos, yPos, txt, size, font, fill, stroke } = line
+
+    gCtx.font = `${size}px ${font}`
+    gCtx.lineWidth = 2
+    gCtx.lineJoin = 'round'
+    gCtx.lineCap = 'round'
+    gCtx.strokeStyle = stroke
+    gCtx.fillStyle = fill
+    gCtx.textAlign = 'center'
+
+    gCtx.strokeText(txt, xPos, yPos)
+    gCtx.fillText(txt, xPos, yPos)
+
+    if (!gRemoveBorderText && idx === selectedLineIdx) {
+        const textWidth = gCtx.measureText(txt).width
+        gCtx.strokeStyle = stroke
+        gCtx.lineWidth = 2
+        gCtx.strokeRect(
+            xPos - textWidth / 2 - 5,
+            yPos - size,
+            textWidth + 10,
+            size + 10
+        )
+    }
 }
+
+/* -------- LINES MOVMENTS -------- */
 
 function addLinsteners() {
     addMouseListeners()
-    addMouseListeners()
+    addTouchListeners()
 }
 
 function addMouseListeners() {
@@ -125,24 +155,22 @@ function addTouchListeners() {
     gElCanvas.addEventListener('touchend', onUp)
 }
 
-/* -------- LINES MOVMENTS -------- */
-
 function getEvPos(ev) {
-    const rect = gElCanvas.getBoundingClientRect(); // חישוב גבולות הקנבס
+    const rect = gElCanvas.getBoundingClientRect()
     let pos = {
         x: (ev.clientX - rect.left) * (gElCanvas.width / rect.width),
         y: (ev.clientY - rect.top) * (gElCanvas.height / rect.height),
-    };
+    }
 
     if (TOUCH_EVS.includes(ev.type)) {
-        ev.preventDefault();
-        ev = ev.changedTouches[0];
+        ev.preventDefault()
+        ev = ev.changedTouches[0]
         pos = {
             x: (ev.pageX - rect.left) * (gElCanvas.width / rect.width),
             y: (ev.pageY - rect.top) * (gElCanvas.height / rect.height),
-        };
+        }
     }
-    return pos;
+    return pos
 }
 
 function onDown(ev) {
@@ -163,18 +191,18 @@ function onDown(ev) {
 }
 
 function onMove(ev) {
-    const meme = getMeme();
-    const { selectedLineIdx, lines } = meme;
+    const meme = getMeme()
+    const { selectedLineIdx, lines } = meme
 
-    if (selectedLineIdx === null || selectedLineIdx < 0 || !lines[selectedLineIdx].isDrag) return;
+    if (selectedLineIdx === null || selectedLineIdx < 0 || !lines[selectedLineIdx].isDrag) return
 
-    const pos = getEvPos(ev);
-    const dx = pos.x - gStartPos.x;
-    const dy = pos.y - gStartPos.y;
+    const pos = getEvPos(ev)
+    const dx = pos.x - gStartPos.x
+    const dy = pos.y - gStartPos.y
 
-    moveLine(dx, dy);
-    gStartPos = pos;
-    renderMeme();
+    moveLine(dx, dy)
+    gStartPos = pos
+    renderMeme()
 }
 
 function onUp() {
@@ -187,7 +215,7 @@ function onUp() {
 function onUpdateText(elInput) {
     const inputValue = elInput.value
     updateText(inputValue)
-    renderText()
+    renderLine()
 
     updateEditorFields()
     renderMeme()
@@ -195,15 +223,18 @@ function onUpdateText(elInput) {
 
 function onSwitchLine() {
     switchLine()
-    renderText()
+    renderLine()
 
     updateEditorFields()
     renderMeme()
 }
 
 function onAddLine() {
-    addLine()
-    renderText()
+    const xPos = gElCanvas.width / 2
+    const yPos = gElCanvas.height / 2
+
+    addLine(xPos, yPos)
+    renderLine()
 
     updateEditorFields()
     renderMeme()
@@ -211,7 +242,7 @@ function onAddLine() {
 
 function onRemoveLine() {
     removeLine()
-    renderText()
+    renderLine()
 
     updateEditorFields()
     renderMeme()
@@ -221,14 +252,14 @@ function onRemoveLine() {
 
 function onChangeTextSizeOnce(diff) {
     changeTextSize(diff)
-    renderText()
+    renderLine()
 }
 
 function startChangeTextSize(diff) {
     gTextSizeInterval = setInterval(() => {
         changeTextSize(diff)
-        renderText()
-    }, 100)
+        renderLine()
+    }, 70)
 }
 
 function stopChangeTextSize() {
@@ -257,23 +288,47 @@ function onSelectFillColor(input) {
 function onChangeFont() {
     const selectedFont = document.querySelector('.fonts.select').value
     changeFont(selectedFont)
-    renderText()
+    renderLine()
 }
 
 /* -------- MEME SAVE/SHARE ACTIONS -------- */
 
-function onShareImg() {
-    const imgUrl = gElCanvas.toDataURL('image/jpeg')
+function onSaveMeme() {
+    gRemoveBorderText = true
+    renderMeme()
 
-    uploadImg(imgUrl, (imgUrl) => {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imgUrl)}`
-        window.open(shareUrl, '_blank')
-    })
+    setTimeout(() => {
+        const imgUrl = gElCanvas.toDataURL('image/jpeg')
+        saveMeme(imgUrl)
+        renderSavedMemes()
+        onChangeLayout('saved')
+        gRemoveBorderText = false
+    }, 0)
+}
+
+function onShareMeme() {
+    gRemoveBorderText = true
+    renderMeme()
+
+    setTimeout(() => {
+        const imgUrl = gElCanvas.toDataURL('image/jpeg')
+        uploadImg(imgUrl, (uploadedImgUrl) => {
+            const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(uploadedImgUrl)}`
+            window.open(shareUrl, '_blank')
+            gRemoveBorderText = false
+        })
+    }, 0)
 }
 
 function onDownloadMeme(elLink) {
-    const imgContent = gElCanvas.toDataURL('image/jpeg')
-    elLink.href = imgContent
+    gRemoveBorderText = true
+    renderMeme()
+
+    setTimeout(() => {
+        const imgUrl = gElCanvas.toDataURL('image/jpeg')
+        elLink.href = imgUrl
+        gRemoveBorderText = false
+    }, 0)
 }
 
 /* -------- General -------- */
@@ -319,4 +374,26 @@ function updateEditorFields(isReset = false) {
         elFillBtn.style.backgroundColor = selectedLine.fill
         elFontSelect.value = selectedLine.font
     }
+}
+
+function onToggleMenu() {
+    if (window.innerWidth <= 650) {
+        document.body.classList.toggle('openedMenu')
+    }
+}
+
+function onNavActive(el) {
+    const navItems = document.querySelectorAll('.main-nav .item')
+
+    navItems.forEach(item => item.classList.remove('active'))
+    el.classList.add('active')
+}
+
+function onContinueReadingClick() {
+    document.querySelector('.modal-container').showModal()
+}
+
+function onCloseModal() {
+    document.querySelector('.modal-container').close()
+    document.querySelector('.modal-input').value = ''
 }

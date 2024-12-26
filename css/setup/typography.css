@@ -25,6 +25,12 @@
 
 /* ------- */
 
+.fa.main-menu::before {
+    content: '\f0c9';
+}
+
+/* ------- */
+
 .fa.switch-line::before {
     content: '\f062  \f063';
 }
