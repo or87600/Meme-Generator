@@ -5,11 +5,13 @@ let gElCanvas
 let gCtx
 let gCurrentMeme = null
 let gTextSizeInterval
+let gStartPos
+const TOUCH_EVS = ['touchstart', 'touchmove', 'touchend']
 
 function onInit() {
     if (gPageState === 'gallery') renderGallery()
     else if (gPageState === 'saved') renderSaved()
-    else if (gPageState === 'editor') renderEditor()
+    else if (gPageState === 'editor') renderMeme()
 }
 
 function renderGallery() {
@@ -27,7 +29,7 @@ function renderGallery() {
     elGallery.innerHTML = strHtml.join('')
 }
 
-function renderEditor() {
+function renderMeme() {
     const meme = getMeme()
     const memesImgs = getMemesImgs()
 
@@ -43,17 +45,20 @@ function renderEditor() {
         renderText()
         if (!meme.lines) updateEditorFields(true)
         else updateEditorFields()
+        addLinsteners()
     }
 }
 
-function coverCanvasWithImg(gCurrentMeme) {
-    const imgRatio = gCurrentMeme.naturalWidth / gCurrentMeme.naturalHeight;
+function coverCanvasWithImg(img) {
+    const imgRatio = img.naturalWidth / img.naturalHeight;
+
     if (gElCanvas.width / gElCanvas.height > imgRatio) {
         gElCanvas.height = gElCanvas.width / imgRatio;
     } else {
         gElCanvas.width = gElCanvas.height * imgRatio;
     }
-    gCtx.drawImage(gCurrentMeme, 0, 0, gElCanvas.width, gElCanvas.height);
+
+    gCtx.drawImage(img, 0, 0, gElCanvas.width, gElCanvas.height);
 }
 
 function renderText() {
@@ -66,40 +71,31 @@ function renderText() {
 
     if (gCurrentMeme) coverCanvasWithImg(gCurrentMeme)
 
-    const lineHeight = 50
-    const padding = 2
-    const margin = 5
-
     lines.forEach((line, idx) => {
-        gCtx.font = `${line.size}px ${line.font}`
+        const { xPos, yPos, txt, size, font, fill, stroke } = line
+
+        gCtx.font = `${size}px ${font}`
         gCtx.lineWidth = 2
         gCtx.lineJoin = 'round'
         gCtx.lineCap = 'round'
 
-        gCtx.strokeStyle = line.stroke
-        gCtx.fillStyle = line.fill
+        gCtx.strokeStyle = stroke
+        gCtx.fillStyle = fill
         gCtx.textAlign = 'center'
 
-        let yPosition
-        if (idx === 0) {
-            yPosition = lineHeight + padding
-        } else if (idx === 1) {
-            yPosition = gElCanvas.height - lineHeight
-        } else {
-            yPosition = gElCanvas.height / 2
-        }
-
-        gCtx.strokeText(line.txt, gElCanvas.width / 2, yPosition)
-        gCtx.fillText(line.txt, gElCanvas.width / 2, yPosition)
+        gCtx.strokeText(txt, xPos, yPos)
+        gCtx.fillText(txt, xPos, yPos)
 
         if (idx === selectedLineIdx) {
-            gCtx.strokeStyle = line.stroke
+            const textWidth = gCtx.measureText(txt).width
+
+            gCtx.strokeStyle = stroke
             gCtx.strokeRect(
-                gElCanvas.width / 2 - gCtx.measureText(line.txt).width / 2 - 10,
-                yPosition - line.size - 5,
-                gCtx.measureText(line.txt).width + 20,
-                line.size + 20
-            );
+                xPos - textWidth / 2 - 10,
+                yPos - size - 10,
+                textWidth + 20,
+                size + 20
+            )
         }
     })
 }
@@ -112,6 +108,80 @@ function onClickMeme(memeId) {
     onInit()
 }
 
+function addLinsteners() {
+    addMouseListeners()
+    addMouseListeners()
+}
+
+function addMouseListeners() {
+    gElCanvas.addEventListener('mousedown', onDown)
+    gElCanvas.addEventListener('mousemove', onMove)
+    gElCanvas.addEventListener('mouseup', onUp)
+}
+
+function addTouchListeners() {
+    gElCanvas.addEventListener('touchstart', onDown)
+    gElCanvas.addEventListener('touchmove', onMove)
+    gElCanvas.addEventListener('touchend', onUp)
+}
+
+/* -------- LINES MOVMENTS -------- */
+
+function getEvPos(ev) {
+    const rect = gElCanvas.getBoundingClientRect(); // חישוב גבולות הקנבס
+    let pos = {
+        x: (ev.clientX - rect.left) * (gElCanvas.width / rect.width),
+        y: (ev.clientY - rect.top) * (gElCanvas.height / rect.height),
+    };
+
+    if (TOUCH_EVS.includes(ev.type)) {
+        ev.preventDefault();
+        ev = ev.changedTouches[0];
+        pos = {
+            x: (ev.pageX - rect.left) * (gElCanvas.width / rect.width),
+            y: (ev.pageY - rect.top) * (gElCanvas.height / rect.height),
+        };
+    }
+    return pos;
+}
+
+function onDown(ev) {
+    const pos = getEvPos(ev)
+    const meme = getMeme()
+    const { lines } = meme
+
+    lines.forEach((line, idx) => {
+        const textWidth = gCtx.measureText(line.txt).width
+        if (isLineClicked(pos, line.xPos, line.yPos, textWidth, line.size)) {
+            meme.selectedLineIdx = idx
+            setLineDrag(true)
+            gStartPos = pos
+            document.body.style.cursor = 'grabbing'
+        }
+    })
+    renderMeme()
+}
+
+function onMove(ev) {
+    const meme = getMeme();
+    const { selectedLineIdx, lines } = meme;
+
+    if (selectedLineIdx === null || selectedLineIdx < 0 || !lines[selectedLineIdx].isDrag) return;
+
+    const pos = getEvPos(ev);
+    const dx = pos.x - gStartPos.x;
+    const dy = pos.y - gStartPos.y;
+
+    moveLine(dx, dy);
+    gStartPos = pos;
+    renderMeme();
+}
+
+function onUp() {
+    setLineDrag(false)
+    document.body.style.cursor = 'default'
+}
+
 /* -------- LINES ACTIONS -------- */
 
 function onUpdateText(elInput) {
@@ -120,7 +190,7 @@ function onUpdateText(elInput) {
     renderText()
 
     updateEditorFields()
-    renderEditor()
+    renderMeme()
 }
 
 function onSwitchLine() {
@@ -128,7 +198,7 @@ function onSwitchLine() {
     renderText()
 
     updateEditorFields()
-    renderEditor()
+    renderMeme()
 }
 
 function onAddLine() {
@@ -136,7 +206,7 @@ function onAddLine() {
     renderText()
 
     updateEditorFields()
-    renderEditor()
+    renderMeme()
 }
 
 function onRemoveLine() {
@@ -144,7 +214,7 @@ function onRemoveLine() {
     renderText()
 
     updateEditorFields()
-    renderEditor()
+    renderMeme()
 }
 
 /* -------- FONT TYPOGRAPGY ACTIONS -------- */
@@ -174,14 +244,14 @@ function onSelectStrokeColor(input) {
     const color = input.value
 
     changeStrokeColor(color)
-    renderEditor()
+    renderMeme()
 }
 
 function onSelectFillColor(input) {
     const color = input.value
 
     changefillColor(color)
-    renderEditor()
+    renderMeme()
 }
 
 function onChangeFont() {
@@ -196,9 +266,9 @@ function onShareImg() {
     const imgUrl = gElCanvas.toDataURL('image/jpeg')
 
     uploadImg(imgUrl, (imgUrl) => {
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imgUrl)}`;
-        window.open(shareUrl, '_blank');
-    });
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imgUrl)}`
+        window.open(shareUrl, '_blank')
+    })
 }
 
 function onDownloadMeme(elLink) {
@@ -229,24 +299,24 @@ function onChangeLayout(section) {
 }
 
 function updateEditorFields(isReset = false) {
-    const meme = getMeme();
-    const { selectedLineIdx, lines } = meme;
+    const meme = getMeme()
+    const { selectedLineIdx, lines } = meme
 
-    const elInput = document.querySelector('.text-input');
-    const elStrokeBtn = document.querySelector('.stroke-clr-btn');
-    const elFillBtn = document.querySelector('.fill-clr-btn');
-    const elFontSelect = document.querySelector('.fonts');
+    const elInput = document.querySelector('.text-input')
+    const elStrokeBtn = document.querySelector('.stroke-clr-btn')
+    const elFillBtn = document.querySelector('.fill-clr-btn')
+    const elFontSelect = document.querySelector('.fonts')
 
     if (isReset || !lines || lines.length === 0) {
-        elInput.value = '';
-        elStrokeBtn.style.backgroundColor = '#F0F0F0';
-        elFillBtn.style.backgroundColor = '#F0F0F0';
-        elFontSelect.value = 'Arial';
+        elInput.value = ''
+        elStrokeBtn.style.backgroundColor = '#F0F0F0'
+        elFillBtn.style.backgroundColor = '#F0F0F0'
+        elFontSelect.value = 'Arial'
     } else {
-        const selectedLine = lines[selectedLineIdx];
-        elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt;
-        elStrokeBtn.style.backgroundColor = selectedLine.stroke;
-        elFillBtn.style.backgroundColor = selectedLine.fill;
-        elFontSelect.value = selectedLine.font;
+        const selectedLine = lines[selectedLineIdx]
+        elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt
+        elStrokeBtn.style.backgroundColor = selectedLine.stroke
+        elFillBtn.style.backgroundColor = selectedLine.fill
+        elFontSelect.value = selectedLine.font
     }
 }

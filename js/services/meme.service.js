@@ -36,10 +36,15 @@ var gMeme = {
     lines: [
         {
             txt: 'Add text here..',
+            width: 0,
             size: 30,
             font: 'Arial',
             fill: '#FFFFFF',
             stroke: '#FF8800',
+            stroke: '#FF8800',
+            yPos: 50,
+            xPos: 150,
+            isDrag: false,
         }
     ]
 }
@@ -51,6 +56,36 @@ function getMemesImgs() {
 function getMeme() {
     _saveMeme()
     return gMeme
+}
+
+/* -------- LINES MOVMENTS -------- */
+
+function isLineClicked(pos, xPos, yPos, textWidth, textHeight) {
+    return (
+        pos.x >= xPos - textWidth / 2 &&
+        pos.x <= xPos + textWidth / 2 &&
+        pos.y >= yPos - textHeight &&
+        pos.y <= yPos
+    );
+}
+
+function setLineDrag(isDrag) {
+    const meme = getMeme()
+    const { selectedLineIdx, lines } = meme
+
+    if (selectedLineIdx === null || selectedLineIdx < 0 || !lines[selectedLineIdx]) return
+
+    lines[selectedLineIdx].isDrag = isDrag
+}
+
+function moveLine(dx, dy) {
+    const meme = getMeme()
+    const { selectedLineIdx, lines } = meme
+
+    if (selectedLineIdx === null || selectedLineIdx < 0 || !lines[selectedLineIdx]) return
+
+    lines[selectedLineIdx].xPos += dx
+    lines[selectedLineIdx].yPos += dy
 }
 
 /* -------- LINES ACTIONS -------- */
@@ -75,10 +110,14 @@ function addLine() {
 
     const newLine = {
         txt: 'Add text here..',
+        width: 0,
         size: 30,
         font: 'Arial',
         fill: '#FFFFFF',
         stroke: '#FF8800',
+        xPos: gElCanvas.width / 2,
+        yPos: gElCanvas.height / 2,
+        isDrag: false,
     }
 
     meme.lines.push(newLine)
