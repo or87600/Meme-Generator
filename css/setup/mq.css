@@ -89,9 +89,15 @@
     .main-layout {
         display:block;
     }
+
+    .main-content {
+        padding-inline: 20px;
+    }
+    
+    .meme-actions {
+        flex-direction: column;
+    }
 }
-
-
 
 @media (min-width: 650px) {
 
