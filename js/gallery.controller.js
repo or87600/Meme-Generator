@@ -53,7 +53,5 @@ function onChangeLayout(section) {
 }
 
 function onToggleMenu() {
-    if (window.innerWidth <= 650) {
-        document.body.classList.toggle('openedMenu')
-    }
+    document.body.classList.toggle('openedMenu')
 }
