@@ -20,9 +20,12 @@
                 <span class="fa main-menu flex align-center justify-center" onclick="onToggleMenu(event)"></span>
                 <nav class="main-nav">
                     <ul class="nav-list flex clean-list flex">
-                        <li class="nav-item item"><a class="flex justify-center align-center" onclick="onChangeLayout('gallery'), onToggleMenu(event)">Gallery</a></li>
-                        <li class="nav-item item"><a class="flex justify-center align-center" onclick="onChangeLayout('saved'), onToggleMenu(event)">Saved</a></li>
-                        <li class="nav-item item"><a class="flex justify-center align-center" onclick="onChangeLayout('editor'), onToggleMenu(event)">Editor</a></li>
+                        <li class="nav-item item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('gallery'), onToggleMenu(event)">Gallery</a></li>
+                        <li class="nav-item item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('saved'), onToggleMenu(event)">Saved</a></li>
+                        <li class="nav-item item"><a class="flex justify-center align-center"
+                                onclick="onChangeLayout('editor'), onToggleMenu(event)">Editor</a></li>
                     </ul>
                 </nav>
             </div>
@@ -99,9 +102,12 @@
     </div>
 
     <script src="js/services/utils.service.js"></script>
-    <script src="js/services/meme.service.js"></script>
     <script src="js/services/storage.service.js"></script>
+    <script src="js/services/meme.service.js"></script>
+    
+    <script src="js/gallery.controller.js"></script>
     <script src="js/meme.controller.js"></script>
+    <script src="js/saved.controller.js"></script>
 </body>
 
 </html>

@@ -1,64 +1,20 @@
 'use strict'
 
-let gPageState = 'gallery'
+// Canvas variables
 let gElCanvas
 let gCtx
 let gCurrentMeme = null
+
+// Text variables
 let gTextSizeInterval
+
+// Lines variables
 let gStartPos
 const TOUCH_EVS = ['touchstart', 'touchmove', 'touchend']
+
+// Helpers
 let gRemoveBorderText = false
 
-function onInit() {
-    renderGallery()
-}
-
-/* -------- GALLERY -------- */
-
-function renderGallery() {
-
-    const memesImgs = getMemesImgs()
-    const elGallery = document.querySelector('.memes-gallery')
-
-    const strHtml = memesImgs.map(meme => `
-        <img src="${meme.url}"
-        alt="meme number ${meme.id}"
-        onclick="onClickMeme(${meme.id})">
-    `)
-
-    elGallery.innerHTML = strHtml.join('')
-}
-
-function onClickMeme(memeId) {
-    resetMeme()
-    const meme = getMeme()
-    meme.selectedImgId = memeId
-    onChangeLayout('editor')
-    updateEditorFields(true)
-    renderMeme()
-}
-
-/* -------- SAVED MEMES -------- */
-
-function renderSavedMemes() {
-    const savedMemes = getSavedMemes()
-    const elSavedMemes = document.querySelector('.saved-memes')
-
-    const strHtml = savedMemes.map(meme => `
-        <img src="${meme.url}"
-        alt="meme number ${meme.selectedImgId}"
-        onclick="onOpenSavedMeme(${meme.selectedImgId})">
-    `)
-
-    elSavedMemes.innerHTML = strHtml.join('')
-}
-
-function onOpenSavedMeme(memeId) {
-    const meme = getSavedMemeById(memeId)
-    setMeme(meme)
-    onChangeLayout('editor')
-    renderMeme()
-}
 
 /* -------- EDITOR -------- */
 
@@ -133,6 +89,29 @@ function drawText(line, idx = null, selectedLineIdx) {
             textWidth + 10,
             size + 10
         )
+    }
+}
+
+function updateEditorFields(isReset = false) {
+    const meme = getMeme()
+    const { selectedLineIdx, lines } = meme
+
+    const elInput = document.querySelector('.text-input')
+    const elStrokeBtn = document.querySelector('.stroke-clr-btn')
+    const elFillBtn = document.querySelector('.fill-clr-btn')
+    const elFontSelect = document.querySelector('.fonts')
+
+    if (isReset || !lines || lines.length === 0) {
+        elInput.value = ''
+        elStrokeBtn.style.backgroundColor = '#F0F0F0'
+        elFillBtn.style.backgroundColor = '#F0F0F0'
+        elFontSelect.value = 'Arial'
+    } else {
+        const selectedLine = lines[selectedLineIdx]
+        elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt
+        elStrokeBtn.style.backgroundColor = selectedLine.stroke
+        elFillBtn.style.backgroundColor = selectedLine.fill
+        elFontSelect.value = selectedLine.font
     }
 }
 
@@ -329,71 +308,4 @@ function onDownloadMeme(elLink) {
         elLink.href = imgUrl
         gRemoveBorderText = false
     }, 0)
-}
-
-/* -------- General -------- */
-
-function onChangeLayout(section) {
-    const elGallery = document.querySelector('.memes-gallery')
-    const elSaved = document.querySelector('.saved-memes')
-    const elEditor = document.querySelector('.editor-container')
-
-    if (section === 'gallery') {
-        elGallery.classList.remove('hidden')
-        elSaved.classList.add('hidden')
-        elEditor.classList.add('hidden')
-    } else if (section === 'saved') {
-        elGallery.classList.add('hidden')
-        elSaved.classList.remove('hidden')
-        elEditor.classList.add('hidden')
-    } else if (section === 'editor') {
-        elGallery.classList.add('hidden')
-        elSaved.classList.add('hidden')
-        elEditor.classList.remove('hidden')
-    }
-}
-
-function updateEditorFields(isReset = false) {
-    const meme = getMeme()
-    const { selectedLineIdx, lines } = meme
-
-    const elInput = document.querySelector('.text-input')
-    const elStrokeBtn = document.querySelector('.stroke-clr-btn')
-    const elFillBtn = document.querySelector('.fill-clr-btn')
-    const elFontSelect = document.querySelector('.fonts')
-
-    if (isReset || !lines || lines.length === 0) {
-        elInput.value = ''
-        elStrokeBtn.style.backgroundColor = '#F0F0F0'
-        elFillBtn.style.backgroundColor = '#F0F0F0'
-        elFontSelect.value = 'Arial'
-    } else {
-        const selectedLine = lines[selectedLineIdx]
-        elInput.value = (selectedLine.txt === 'Add text here..') ? '' : selectedLine.txt
-        elStrokeBtn.style.backgroundColor = selectedLine.stroke
-        elFillBtn.style.backgroundColor = selectedLine.fill
-        elFontSelect.value = selectedLine.font
-    }
-}
-
-function onToggleMenu() {
-    if (window.innerWidth <= 650) {
-        document.body.classList.toggle('openedMenu')
-    }
-}
-
-function onNavActive(el) {
-    const navItems = document.querySelectorAll('.main-nav .item')
-
-    navItems.forEach(item => item.classList.remove('active'))
-    el.classList.add('active')
-}
-
-function onContinueReadingClick() {
-    document.querySelector('.modal-container').showModal()
-}
-
-function onCloseModal() {
-    document.querySelector('.modal-container').close()
-    document.querySelector('.modal-input').value = ''
 }

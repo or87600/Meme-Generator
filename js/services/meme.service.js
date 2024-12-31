@@ -65,16 +65,6 @@ function getSavedMemes() {
     return loadFromStorage(SAVED_MEMES_KEY) || []
 }
 
-function resetMeme() {
-    gMeme = {
-        selectedImgId: null,
-        selectedLineIdx: 0,
-        lines: [
-            _createDefaultLine()
-        ]
-    }
-}
-
 /* -------- LINES MOVMENTS -------- */
 
 function isLineClicked(pos, xPos, yPos, textWidth, textHeight) {
@@ -211,7 +201,7 @@ function changeFont(selectedFont) {
     _saveMeme()
 }
 
-/* -------- MEME SAVE/SHARE ACTIONSv -------- */
+/* -------- MEME SAVE/SHARE ACTIONS -------- */
 
 function saveMeme(imgUrl) {
     const meme = getMeme()
@@ -226,6 +216,7 @@ function saveMeme(imgUrl) {
 
     saveToStorage(SAVED_MEMES_KEY, gSavedMemes)
 }
+
 function getSavedMemeById(memeId) {
     return gSavedMemes.find(meme => meme.selectedImgId === memeId)
 }
@@ -271,4 +262,16 @@ function _createDefaultLine() {
 
 function _saveMeme() {
     saveToStorage(STORAGE_KEY, gMeme)
+}
+
+/* -------- GENERAL FUNCTIONS -------- */
+
+function resetMeme() {
+    gMeme = {
+        selectedImgId: null,
+        selectedLineIdx: 0,
+        lines: [
+            _createDefaultLine()
+        ]
+    }
 }
